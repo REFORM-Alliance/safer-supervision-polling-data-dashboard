@@ -961,7 +961,7 @@ server <- function(input, output, session){
             mutate(
               # Create factor levels: alphabetical, then Total at the END (so it appears at TOP after flip)
               demo_label = factor(demo_label, 
-                                  levels = rev(c("Total", sort(unique(demo_label[demo_label != "Total"])))))
+                                  levels = rev(c("Total", "40k", "40-80k", "80-150k", "150k", sort(unique(demo_label[!(demo_label %in% c("Total", "150k", "80-150k", "40-80k", "40k"))])))))
             )
           
           p <- 
