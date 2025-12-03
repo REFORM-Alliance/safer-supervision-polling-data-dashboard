@@ -253,9 +253,9 @@ poll_data <-
                      demographic_variable == "any" ~ "Any Impact",
                      demographic_variable == "pers" ~ "Personally Impacted", 
                      demographic_variable == "pers_incar" ~ "Personally Incarcerated", 
-                     demographic_variable == "pers_prob" ~ "Personally on Probation",
+                     demographic_variable == "pers_prob" ~ "Personally on Supervision",
                      demographic_variable == "know_incar" ~ "Knows Someone Incarcerated",
-                     demographic_variable == "know_prob" ~ "Knows Someone on Probation", 
+                     demographic_variable == "know_prob" ~ "Knows Someone on Supervision", 
                      demographic_variable == "18_34" ~ "18-34", 
                      demographic_variable == "35_49" ~ "35-49", 
                      demographic_variable == "50_64" ~ "50-64", 
@@ -270,7 +270,11 @@ poll_data <-
          values = values * 100, 
          across(c("question_name", "question_name_preamble"), 
                 ~.x %>% 
-                  str_replace_all("parole and probation", "community supervision"))) %>% 
+                  str_replace_all("parole and probation", "community supervision") %>% 
+                  str_replace_all("parole and supervised release", "community supervision") %>% 
+                  str_replace_all("federal parole and supervised inmate release system", "community supervision") %>% 
+                  str_replace_all("parole", "community supervision") %>% 
+                  str_replace_all("Federal probation officers", "Federal supervision officers"))) %>% 
   filter(demographic_category %in% c("2024 Presidential Vote", 
                                      "Total", 
                                      "Party Affiliation", 
