@@ -267,7 +267,10 @@ poll_data <-
          values = 
            values %>% 
            replace_na(0), 
-         values = values * 100) %>% 
+         values = values * 100, 
+         across(c("question_name", "question_name_preamble"), 
+                ~.x %>% 
+                  str_replace_all("parole and probation", "community supervision"))) %>% 
   filter(demographic_category %in% c("2024 Presidential Vote", 
                                      "Total", 
                                      "Party Affiliation", 
