@@ -938,11 +938,20 @@ server <- function(input, output, session){
               polling_response = factor(polling_response, 
                                         levels = unique(polling_response)),
               color = sapply(polling_response_coded, get_response_color),
-              hover_text = paste0(
-                "Demographic: ", demo_label, "\n",
-                "Response: ", polling_response, "\n",
-                "Percentage: ", round(values, 1), "%"
-              )
+              hover_text = 
+                ifelse(demographic_category == "Total", 
+                       paste0(
+                         "Demographic Category: ", demographic_category, "\n",
+                         "Response: ", polling_response, "\n",
+                         "Percentage: ", round(values, 1), "%"
+                       ), 
+                       paste0(
+                         "Demographic Category: ", demographic_category, "\n",
+                         demographic_category, ": ", demo_label, "\n",
+                         "Response: ", polling_response, "\n",
+                         "Percentage: ", round(values, 1), "%"
+                       )
+                )
             ) %>%
             ungroup() %>%
             mutate(
