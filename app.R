@@ -28,20 +28,6 @@ library(readxl)
 
 
 ####Read in Data####
-##Relevant Polling Responses
-# relevant_polling_responses <- 
-#   c(
-    # "ANY CRIMINAL JUSTICE REFORM MUST PUT PUBLIC SAFETY/ COMMUNITY SAFETY AS ITS TOP PRIORITY.", 
-    # "GETTING NON-VIOLENT OFFENDERS TRAINED, OUT OF PRISON, AND BACK INTO THE WORKFORCE [CREATES SAFER COMMUNITIES/HELPS TAXPAYERS AND LOCAL BUSINESSES].", 
-    # "CREATING INCENTIVES FOR GOOD AND PRODUCTIVE BEHAVIOR BY FORMER INMATES UNDER SUPERVISED RELEASE THAT CAN LEAD TO AN EARLY END OF THEIR PAROLE.", 
-    # "MOVING AWAY FROM A ONE-SIZE-FITS-ALL APPROACH THAT ENSURES SUPERVISION UPON RELEASE FROM PRISON IS IMPOSED ONLY WHEN A JUDGE DEEMS IT IS WARRANTED BY THE FACTS OF EACH CASE.", 
-    # "ALLOWING MORE JUDICIAL DISCRETION WHEN THOSE ON PAROLE COMMIT TECHNICAL VIOLATIONS LIKE MISSING A PHONE CHECK-IN INSTEAD OF AUTOMATICALLY SENDING THEM BACK TO PRISON.", 
-    # "ENDING THE NEED FOR SUPERVISED RELEASE FOR LOW-RISK FORMER INMATES SO THEY CAN FOCUS ON GETTING GOOD JOBS AND CONTRIBUTING TO SOCIETY WHILE FREEING UP RESOURCES TO FOCUS SUPERVISION ON HIGH-RISK FORMER INMATES.", 
-    # "OUR PAROLE AND PROBATION RESOURCES SHOULD RETURN TO THEIR ORIGINAL MISSION, FOCUSED ON PEOPLE WITH HIGH RISKS. FEDERAL PROBATION OFFICERS REPORT SIGNIFICANT CASELOADS THAT CAN EXCEED 100 CASES PER OFFICER AND INCLUDE MANY PEOPLE WHO POSE NO SAFETY RISK. THIS CREATES A BURDEN FOR THE OFFICERS AND LIMITS THEIR ABILITY TO PROVIDE APPROPRIATE SUPERVISION FOR THOSE WHO NEED IT.", 
-    # "EVERY DOLLAR SAVED ON UNNECESSARY SUPERVISION OR INCARCERATION IS A DOLLAR THAT CAN SUPPORT PROTECTING COMMUNITIES FROM MORE SERIOUS CRIME.", 
-    # "PLACING PEOPLE ON PAROLE WHO POSE LOW RISKS TO PUBLIC SAFETY IS NOT ONLY A WASTE OF RESOURCES, IT CREATES UNNECESSARY ROADBLOCKS TO SUCCESS THAT COULD OTHERWISE MAKE COMMUNITIES SAFER AND BOOST THE ECONOMY. THINGS LIKE RANDOM CHECK-INS DURING THE WORKDAY, SURPRISE VISITS BY PAROLE OFFICERS AT PLACES OF WORK, AND TRAVEL RESTRICTIONS MAKE IT DIFFICULT FOR THOSE ON PAROLE TO FIND AND HOLD GOOD JOBS, SETTING THEM UP FOR FAILURE.", 
-    # "IN RECENT YEARS, TWICE AS MANY PEOPLE ON SUPERVISED RELEASE HAD THEIR SENTENCES REVOKED FOR SIMPLE TECHNICAL VIOLATIONS THAN FOR NEW ARRESTS FOR ACTUAL CRIMES COMMITTED.")
-
 ##Relevant Questions
 relevant_questions <- 
   c("There is legislation in Congress called the Safer Supervision Act, which would reform the federal parole and probation system to include the policies we just discussed. Do you support or oppose the Safer Supervision Act?", 
@@ -305,7 +291,7 @@ my_theme <- bs_theme(
 
 ####App####
 ##UI
-ui <- navbarPage("SAFER Supervision Polling Data Dashboard",
+ui <- navbarPage("Safer Supervision Polling Data Dashboard",
                  theme = my_theme,
                  tags$head(
                    tags$style(HTML("
@@ -579,10 +565,10 @@ server <- function(input, output, session){
     question_type_order <- c("general_safer", "criminal_justice_reforms", 
                              "supervision_reforms", "safer_supporter")
     question_type_labels <- c(
-      "general_safer" = "Existing Voter Sentiment on SAFER Supervision",
+      "general_safer" = "Existing Voter Sentiment on Safer Supervision",
       "criminal_justice_reforms" = "Voter Sentiment on Criminal Justice Reforms",
       "supervision_reforms" = "Voter Sentiment on Supervision Reforms",
-      "safer_supporter" = "Gauging Further Voter Support for SAFER Supervision"
+      "safer_supporter" = "Gauging Further Voter Support for Safer Supervision"
     )
     
     question_types <- df %>%
@@ -637,10 +623,10 @@ server <- function(input, output, session){
     question_type_order <- c("general_safer", "criminal_justice_reforms", 
                              "supervision_reforms", "safer_supporter")
     question_type_labels <- c(
-      "general_safer" = "Existing Voter Sentiment on SAFER Supervision",
+      "general_safer" = "Existing Voter Sentiment on Safer Supervision",
       "criminal_justice_reforms" = "Voter Sentiment on Criminal Justice Reforms",
       "supervision_reforms" = "Voter Sentiment on Supervision Reforms",
-      "safer_supporter" = "Gauging Further Voter Support for SAFER Supervision"
+      "safer_supporter" = "Gauging Further Voter Support for Safer Supervision"
     )
     
     question_types <- 
@@ -792,10 +778,10 @@ server <- function(input, output, session){
     question_type_order <- c("general_safer", "criminal_justice_reforms", 
                              "supervision_reforms", "safer_supporter")
     question_type_labels <- c(
-      "general_safer" = "Existing Voter Sentiment on SAFER Supervision",
+      "general_safer" = "Existing Voter Sentiment on Safer Supervision",
       "criminal_justice_reforms" = "Voter Sentiment on Criminal Justice Reforms",
       "supervision_reforms" = "Voter Sentiment on Supervision Reforms",
-      "safer_supporter" = "Gauging Further Voter Support for SAFER Supervision"
+      "safer_supporter" = "Gauging Further Voter Support for Safer Supervision"
     )
     
     question_types <- df %>%
@@ -851,10 +837,10 @@ server <- function(input, output, session){
     question_type_order <- c("general_safer", "criminal_justice_reforms", 
                              "supervision_reforms", "safer_supporter")
     question_type_labels <- c(
-      "general_safer" = "Existing Voter Sentiment on SAFER Supervision",
+      "general_safer" = "Existing Voter Sentiment on Safer Supervision",
       "criminal_justice_reforms" = "Voter Sentiment on Criminal Justice Reforms",
       "supervision_reforms" = "Voter Sentiment on Supervision Reforms",
-      "safer_supporter" = "Gauging Further Voter Support for SAFER Supervision"
+      "safer_supporter" = "Gauging Further Voter Support for Safer Supervision"
     )
     
     question_types <- 
