@@ -245,6 +245,7 @@ poll_data <-
                      demographic_variable == "18_34" ~ "18-34", 
                      demographic_variable == "35_49" ~ "35-49", 
                      demographic_variable == "50_64" ~ "50-64", 
+                     demographic_variable == "65" ~ "65+", 
                      demographic_variable == "hisp" ~ "Hispanic", 
                      demographic_variable == "sub" ~ "Suburban",
                      demographic_variable == "40k_80k" ~ "40-80k", 
