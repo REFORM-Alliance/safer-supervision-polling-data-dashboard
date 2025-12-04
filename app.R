@@ -712,13 +712,13 @@ server <- function(input, output, session){
             arrange(desc(polling_response_coded)) %>%
             mutate(
               # Normalize values to sum to exactly 100
-              values_normalized = values / sum(values, na.rm = TRUE) * 100,
+              values_normalized = 100 * (values / sum(values, na.rm = TRUE)),
               polling_response = factor(polling_response, 
                                         levels = unique(polling_response)),
               color = sapply(polling_response_coded, get_response_color),
               hover_text = paste0(
                 "Response: ", polling_response, "\n",
-                "Percentage: ", round(values, 1), "%"  # Show original rounded value in tooltip
+                "Percentage: ", round(values_normalized, 0), "%"  # Show original rounded value in tooltip
               )
             )
           
@@ -755,7 +755,11 @@ server <- function(input, output, session){
                 y = -0.2,          # CHANGE: position below the plot
                 yanchor = "top"    # CHANGE: anchor at top of legend
               ),
-              margin = list(l = 50, r = 50, t = 10, b = 80)  # CHANGE: increase bottom margin for legend
+              margin = list(l = 50, r = 50, t = 10, b = 80),
+              xaxis = list(  
+                range = c(-0.5, 100.5),
+                fixedrange = FALSE
+              )
             )
         })
       })
@@ -922,42 +926,48 @@ server <- function(input, output, session){
         plot_id <- paste0("plot_detail_", gsub("[^A-Za-z0-9]", "_", question_name_local))
         
         output[[plot_id]] <- renderPlotly({
+          response_order <- df %>%
+            filter(question_name == question_name_local) %>%
+            select(polling_response, polling_response_coded) %>%
+            distinct() %>%
+            arrange(desc(polling_response_coded)) %>%
+            pull(polling_response)
+          
           plot_data <- 
             df %>%
             filter(question_name == question_name_local) %>%
             mutate(
               demo_label = ifelse(demographic_category == "Total", 
                                   "Total", 
-                                  paste0(demographic_variable))
+                                  paste0(demographic_variable)),
+              polling_response = factor(polling_response, levels = response_order)
             ) %>%
             arrange(demo_label) %>%  
             group_by(demo_label) %>%
-            arrange(desc(polling_response_coded), .by_group = TRUE) %>%
+            arrange(polling_response, .by_group = TRUE) %>%
             mutate(
-              values_normalized = values / sum(values, na.rm = TRUE) * 100,
-              polling_response = factor(polling_response, 
-                                        levels = unique(polling_response)),
+              values_normalized = 100 * (values / sum(values, na.rm = TRUE)),
               color = sapply(polling_response_coded, get_response_color),
               hover_text = 
                 ifelse(demographic_category == "Total", 
                        paste0(
                          "Demographic Category: ", demographic_category, "\n",
                          "Response: ", polling_response, "\n",
-                         "Percentage: ", round(values, 1), "%"
+                         "Percentage: ", round(values_normalized, 1), "%"
                        ), 
                        paste0(
                          "Demographic Category: ", demographic_category, "\n",
                          demographic_category, ": ", demo_label, "\n",
                          "Response: ", polling_response, "\n",
-                         "Percentage: ", round(values, 1), "%"
+                         "Percentage: ", round(values_normalized, 1), "%"
                        )
                 )
             ) %>%
             ungroup() %>%
             mutate(
-              # Create factor levels: alphabetical, then Total at the END (so it appears at TOP after flip)
               demo_label = factor(demo_label, 
-                                  levels = rev(c("Total", "40k", "40-80k", "80-150k", "150k", sort(unique(demo_label[!(demo_label %in% c("Total", "150k", "80-150k", "40-80k", "40k"))])))))
+                                  levels = rev(c("Total", "40k", "40-80k", "80-150k", "150k", 
+                                                 sort(unique(demo_label[!(demo_label %in% c("Total", "150k", "80-150k", "40-80k", "40k"))])))))
             )
           
           p <- 
@@ -966,13 +976,14 @@ server <- function(input, output, session){
                        y = values_normalized,
                        fill = polling_response,
                        text = hover_text)) +
-            geom_bar(stat = "identity", position = "stack", width = 0.7) +
+            geom_bar(stat = "identity", 
+                     position = position_stack(reverse = FALSE), 
+                     width = 0.7) +
             scale_fill_manual(values = setNames(unique(plot_data$color), 
                                                 unique(plot_data$polling_response)),
                               name = "Response") +
             scale_y_continuous(breaks = c(0, 25, 50, 75, 100),
-                               labels = function(x) paste0(x, "%"),
-                               limits = c(0, 100)) +
+                               labels = function(x) paste0(x, "%")) + 
             labs(x = NULL, y = NULL) +
             theme_minimal() +
             theme(
@@ -993,7 +1004,12 @@ server <- function(input, output, session){
                 y = -0.2,
                 yanchor = "top"
               ),
-              margin = list(l = 100, r = 50, t = 10, b = 80)
+              margin = list(l = 100, r = 50, t = 10, b = 80),
+              bargap = 0.15,
+              xaxis = list(  
+                range = c(-0.5, 100.5),
+                fixedrange = FALSE
+              )
             )
         })
       })
