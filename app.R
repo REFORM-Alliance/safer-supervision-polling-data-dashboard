@@ -250,6 +250,7 @@ poll_data <-
                      demographic_variable == "sub" ~ "Suburban",
                      demographic_variable == "40k_80k" ~ "40-80k", 
                      demographic_variable == "80_150k" ~ "80-150k", 
+                     demographic_variable == "150k" ~ "150k+",
                      TRUE ~ str_to_title(demographic_variable)), 
          values = 
            values %>% 
@@ -966,8 +967,8 @@ server <- function(input, output, session){
             ungroup() %>%
             mutate(
               demo_label = factor(demo_label, 
-                                  levels = rev(c("Total", "40k", "40-80k", "80-150k", "150k", 
-                                                 sort(unique(demo_label[!(demo_label %in% c("Total", "150k", "80-150k", "40-80k", "40k"))])))))
+                                  levels = rev(c("Total", "40k", "40-80k", "80-150k", "150k+", 
+                                                 sort(unique(demo_label[!(demo_label %in% c("Total", "150k+", "80-150k", "40-80k", "40k"))])))))
             )
           
           p <- 
