@@ -680,7 +680,7 @@ server <- function(input, output, session){
               color = sapply(polling_response_coded, get_response_color),
               hover_text = paste0(
                 "Response: ", polling_response, "\n",
-                "Percentage: ", round(values_normalized, 0), "%"  
+                "Percentage: ", round(values, 1), "%"  
               )
             )
 
@@ -913,13 +913,13 @@ server <- function(input, output, session){
                        paste0(
                          "Demographic Category: ", demographic_category, "\n",
                          "Response: ", polling_response, "\n",
-                         "Percentage: ", round(values_normalized, 1), "%"
+                         "Percentage: ", round(values, 1), "%"
                        ),
                        paste0(
                          "Demographic Category: ", demographic_category, "\n",
                          demographic_category, ": ", demo_label, "\n",
                          "Response: ", polling_response, "\n",
-                         "Percentage: ", round(values_normalized, 1), "%"
+                         "Percentage: ", round(values, 1), "%"
                        )
                 )
             ) %>%
