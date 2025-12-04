@@ -520,50 +520,9 @@ server <- function(input, output, session){
     return(result)
   }
   
-  # output$main_dashboard_content <- renderUI({
-  #   df <- filtered_polling_data()
-  #   
-  #   question_types <- 
-  #     df %>%
-  #     select(question_type, question_name_preamble, question_name) %>%
-  #     distinct() %>%
-  #     arrange(question_type, question_name)
-  #   
-  #   ui_elements <- list()
-  #   current_preamble <- NULL
-  #   
-  #   for(i in 1:nrow(question_types)) {
-  #     q_type <- question_types$question_type[i]
-  #     q_preamble <- question_types$question_name_preamble[i]
-  #     q_name <- question_types$question_name[i]
-  #     
-  #     if(is.null(current_preamble) || current_preamble != q_preamble) {
-  #       ui_elements <- append(ui_elements, list(
-  #         div(class = "section-preamble", q_preamble)
-  #       ))
-  #       current_preamble <- q_preamble
-  #     }
-  #     
-  #     ui_elements <- append(ui_elements, list(
-  #       div(class = "question-header", q_name)
-  #     ))
-  #     
-  #     plot_id <- paste0("plot_", gsub("[^A-Za-z0-9]", "_", q_name))
-  #     ui_elements <- append(ui_elements, list(
-  #       box(
-  #         width = 12,
-  #         plotlyOutput(plot_id, height = 300)
-  #       )
-  #     ))
-  #   }
-  #   
-  #   do.call(tagList, ui_elements)
-  # })
-  
   output$navigation_menu <- renderUI({
     df <- filtered_polling_data()
     
-    # Define question type order and labels
     question_type_order <- c("general_safer", "criminal_justice_reforms", 
                              "supervision_reforms", "safer_supporter")
     question_type_labels <- c(
@@ -586,31 +545,35 @@ server <- function(input, output, session){
       q_type <- as.character(question_types$question_type[i])
       q_name <- question_types$question_name[i]
       
-      # Add section header
       if(is.null(current_section) || current_section != q_type) {
+        section_anchor <- paste0("section_", q_type)  
         nav_elements <- append(nav_elements, list(
-          tags$div(
-            style = "font-size: 14px; font-weight: bold; margin-top: 15px; 
-                   margin-bottom: 8px; color: #009E73;",
+          tags$a(
+            href = paste0("#", section_anchor),
+            style = "display: block; font-size: 14px; font-weight: bold; margin-top: 15px; 
+                 margin-bottom: 8px; color: #009E73; text-decoration: none;
+                 cursor: pointer; transition: all 0.2s;",  
+            onmouseover = "this.style.color='#007A5E'; this.style.textDecoration='underline';", 
+            onmouseout = "this.style.color='#009E73'; this.style.textDecoration='none';",
             question_type_labels[q_type]
           )
         ))
         current_section <- q_type
       }
       
-      # Add question link (without question ID)
       question_anchor <- paste0("question_", gsub("[^A-Za-z0-9]", "_", q_name))
       short_name <- if(nchar(q_name) > 50) paste0(substr(q_name, 1, 47), "...") else q_name
       
       nav_elements <- append(nav_elements, list(
         tags$a(
           href = paste0("#", question_anchor),
+          title = q_name,
           style = "display: block; padding: 5px 10px; margin-bottom: 5px; 
-                 color: #4A90E2; text-decoration: none; font-size: 12px;
-                 border-left: 2px solid transparent; transition: all 0.2s;",
+               color: #4A90E2; text-decoration: none; font-size: 12px;
+               border-left: 2px solid transparent; transition: all 0.2s;",
           onmouseover = "this.style.borderLeft='2px solid #4A90E2'; this.style.backgroundColor='#F5F5F5';",
           onmouseout = "this.style.borderLeft='2px solid transparent'; this.style.backgroundColor='transparent';",
-          short_name  # CHANGED: removed the Q# prefix
+          short_name
         )
       ))
     }
@@ -621,7 +584,6 @@ server <- function(input, output, session){
   output$main_dashboard_content <- renderUI({
     df <- filtered_polling_data()
     
-    # Define question type order and labels
     question_type_order <- c("general_safer", "criminal_justice_reforms", 
                              "supervision_reforms", "safer_supporter")
     question_type_labels <- c(
@@ -647,41 +609,41 @@ server <- function(input, output, session){
       q_preamble <- question_types$question_name_preamble[i]
       q_name <- question_types$question_name[i]
       
-      # Add section label for new question type
       if(is.null(current_question_type) || current_question_type != q_type) {
+        section_anchor <- paste0("section_", q_type)  
         ui_elements <- append(ui_elements, list(
-          div(style = "font-size: 24px; font-weight: bold; margin-top: 40px; margin-bottom: 20px; 
-                     color: #009E73; border-bottom: 3px solid #009E73; padding-bottom: 10px;",
-              question_type_labels[q_type])
+          div(
+            id = section_anchor,  
+            style = "font-size: 24px; font-weight: bold; margin-top: 40px; margin-bottom: 20px; 
+                 color: #009E73; border-bottom: 3px solid #009E73; padding-bottom: 10px;
+                 scroll-margin-top: 70px;",  
+            question_type_labels[q_type])
         ))
         current_question_type <- q_type
-        current_preamble <- NULL  # Reset preamble when changing sections
+        current_preamble <- NULL
       }
       
-      # Add preamble if it's new
       if(!is.na(q_preamble) && q_preamble != "" && 
          (is.null(current_preamble) || current_preamble != q_preamble)) {
         ui_elements <- append(ui_elements, list(
           div(style = "font-size: 14px; font-style: italic; margin-top: 20px; 
-             margin-bottom: 15px; color: #555; padding: 8px; 
-             background-color: #F5F5F5; border-left: 3px solid #4A90E2;",
+           margin-bottom: 15px; color: #555; padding: 8px; 
+           background-color: #F5F5F5; border-left: 3px solid #4A90E2;",
               q_preamble)
         ))
         current_preamble <- q_preamble
       }
       
-      # Add question header with anchor
       question_anchor <- paste0("question_", gsub("[^A-Za-z0-9]", "_", q_name))
       ui_elements <- append(ui_elements, list(
         tags$div(
-          id = question_anchor,  # Anchor for navigation
+          id = question_anchor,
           style = "font-size: 15px; font-weight: 600; margin-top: 15px; 
-             margin-bottom: 10px; color: #2C2C2C; scroll-margin-top: 70px;",
+           margin-bottom: 10px; color: #2C2C2C; scroll-margin-top: 70px;",
           q_name
         )
       ))
       
-      # Add plot for this question
       plot_id <- paste0("plot_", gsub("[^A-Za-z0-9]", "_", q_name))
       ui_elements <- append(ui_elements, list(
         box(
@@ -696,68 +658,67 @@ server <- function(input, output, session){
   
   observe({
     df <- filtered_polling_data()
-    
+
     question_types <- df %>%
       select(question_name) %>%
       distinct() %>%
       pull(question_name)
-    
+
     for(q_name in question_types) {
       local({
         question_name_local <- q_name
         plot_id <- paste0("plot_", gsub("[^A-Za-z0-9]", "_", question_name_local))
-        
+
         output[[plot_id]] <- renderPlotly({
           plot_data <- df %>%
             filter(question_name == question_name_local) %>%
             arrange(desc(polling_response_coded)) %>%
             mutate(
-              # Normalize values to sum to exactly 100
               values_normalized = 100 * (values / sum(values, na.rm = TRUE)),
-              polling_response = factor(polling_response, 
+              polling_response = factor(polling_response,
                                         levels = unique(polling_response)),
               color = sapply(polling_response_coded, get_response_color),
               hover_text = paste0(
                 "Response: ", polling_response, "\n",
-                "Percentage: ", round(values_normalized, 0), "%"  # Show original rounded value in tooltip
+                "Percentage: ", round(values_normalized, 0), "%"  
               )
             )
-          
-          p <- 
-            plot_data %>% 
-            ggplot(aes(x = "Total", 
+
+          p <-
+            plot_data %>%
+            ggplot(aes(x = "Total",
                        y = values_normalized,
                        fill = polling_response,
                        text = hover_text)) +
             geom_bar(stat = "identity", position = "stack", width = 0.5) +
-            scale_fill_manual(values = setNames(plot_data$color, 
+            scale_fill_manual(values = setNames(plot_data$color,
                                                 plot_data$polling_response),
                               name = "Response") +
-            scale_y_continuous(breaks = c(0, 25, 50, 75, 100),  # ADD THIS
+            scale_y_continuous(breaks = c(0, 25, 50, 75, 100),  
                                labels = function(x) paste0(x, "%"),
                                limits = c(0, 100)) +
             labs(x = NULL, y = NULL) +
             theme_minimal() +
             theme(
-              axis.text.x = element_text(size = 10),  # CHANGE
-              axis.ticks.x = element_line(),          # CHANGE
+              axis.text.x = element_text(size = 10),  
+              axis.ticks.x = element_line(),          
               legend.position = "right",
               panel.grid.major.x = element_blank()
             ) +
             coord_flip()
-          
+
           ggplotly(p, tooltip = "text") %>%
             layout(
               showlegend = TRUE,
               legend = list(
-                orientation = "h",  # CHANGE: horizontal orientation
-                x = 0.5,           # CHANGE: center horizontally
-                xanchor = "center", # CHANGE: anchor at center
-                y = -0.2,          # CHANGE: position below the plot
-                yanchor = "top"    # CHANGE: anchor at top of legend
+                orientation = "h", 
+                x = 0.5,           
+                xanchor = "center", 
+                y = -0.2,          
+                yanchor = "top"    
               ),
               margin = list(l = 50, r = 50, t = 10, b = 80),
-              xaxis = list(  
+              xaxis = list(
                 range = c(-0.5, 100.5),
                 fixedrange = FALSE
               )
@@ -767,7 +728,6 @@ server <- function(input, output, session){
     }
   })
   
-  # Filtered data for detailed analysis
   filtered_polling_data_detail <- reactive({
     req(input$demographic_filter)
     
@@ -776,11 +736,9 @@ server <- function(input, output, session){
       arrange(question_type, question_id, demographic_category, demographic_variable, desc(polling_response_coded))
   })
   
-  # Navigation menu for detailed analysis
   output$navigation_menu_detail <- renderUI({
     df <- filtered_polling_data_detail()
     
-    # Define question type order and labels
     question_type_order <- c("general_safer", "criminal_justice_reforms", 
                              "supervision_reforms", "safer_supporter")
     question_type_labels <- c(
@@ -803,28 +761,32 @@ server <- function(input, output, session){
       q_type <- as.character(question_types$question_type[i])
       q_name <- question_types$question_name[i]
       
-      # Add section header
       if(is.null(current_section) || current_section != q_type) {
+        section_anchor <- paste0("section_detail_", q_type)  
         nav_elements <- append(nav_elements, list(
-          tags$div(
-            style = "font-size: 14px; font-weight: bold; margin-top: 15px; 
-                   margin-bottom: 8px; color: #009E73;",
+          tags$a(
+            href = paste0("#", section_anchor),  
+            style = "display: block; font-size: 14px; font-weight: bold; margin-top: 15px; 
+                 margin-bottom: 8px; color: #009E73; text-decoration: none;
+                 cursor: pointer; transition: all 0.2s;",
+            onmouseover = "this.style.color='#007A5E'; this.style.textDecoration='underline';",
+            onmouseout = "this.style.color='#009E73'; this.style.textDecoration='none';",
             question_type_labels[q_type]
           )
         ))
         current_section <- q_type
       }
       
-      # Add question link
       question_anchor <- paste0("question_detail_", gsub("[^A-Za-z0-9]", "_", q_name))
       short_name <- if(nchar(q_name) > 50) paste0(substr(q_name, 1, 47), "...") else q_name
       
       nav_elements <- append(nav_elements, list(
         tags$a(
           href = paste0("#", question_anchor),
+          title = q_name,
           style = "display: block; padding: 5px 10px; margin-bottom: 5px; 
-                 color: #4A90E2; text-decoration: none; font-size: 12px;
-                 border-left: 2px solid transparent; transition: all 0.2s;",
+               color: #4A90E2; text-decoration: none; font-size: 12px;
+               border-left: 2px solid transparent; transition: all 0.2s;",
           onmouseover = "this.style.borderLeft='2px solid #4A90E2'; this.style.backgroundColor='#F5F5F5';",
           onmouseout = "this.style.borderLeft='2px solid transparent'; this.style.backgroundColor='transparent';",
           short_name
@@ -835,11 +797,9 @@ server <- function(input, output, session){
     do.call(tagList, nav_elements)
   })
   
-  # Main content for detailed analysis
   output$detailed_dashboard_content <- renderUI({
     df <- filtered_polling_data_detail()
     
-    # Define question type order and labels
     question_type_order <- c("general_safer", "criminal_justice_reforms", 
                              "supervision_reforms", "safer_supporter")
     question_type_labels <- c(
@@ -865,46 +825,46 @@ server <- function(input, output, session){
       q_preamble <- question_types$question_name_preamble[i]
       q_name <- question_types$question_name[i]
       
-      # Add section label for new question type
       if(is.null(current_question_type) || current_question_type != q_type) {
+        section_anchor <- paste0("section_detail_", q_type)  
         ui_elements <- append(ui_elements, list(
-          div(style = "font-size: 24px; font-weight: bold; margin-top: 40px; margin-bottom: 20px; 
-                   color: #009E73; border-bottom: 3px solid #009E73; padding-bottom: 10px;",
-              question_type_labels[q_type])
+          div(
+            id = section_anchor,
+            style = "font-size: 24px; font-weight: bold; margin-top: 40px; margin-bottom: 20px; 
+                 color: #009E73; border-bottom: 3px solid #009E73; padding-bottom: 10px;
+                 scroll-margin-top: 70px;",  
+            question_type_labels[q_type])
         ))
         current_question_type <- q_type
         current_preamble <- NULL
       }
       
-      # Add preamble if it's new
       if(!is.na(q_preamble) && q_preamble != "" && 
          (is.null(current_preamble) || current_preamble != q_preamble)) {
         ui_elements <- append(ui_elements, list(
           div(style = "font-size: 14px; font-style: italic; margin-top: 20px; 
-               margin-bottom: 15px; color: #555; padding: 8px; 
-               background-color: #F5F5F5; border-left: 3px solid #4A90E2;",
+             margin-bottom: 15px; color: #555; padding: 8px; 
+             background-color: #F5F5F5; border-left: 3px solid #4A90E2;",
               q_preamble)
         ))
         current_preamble <- q_preamble
       }
       
-      # Add question header with anchor
       question_anchor <- paste0("question_detail_", gsub("[^A-Za-z0-9]", "_", q_name))
       ui_elements <- append(ui_elements, list(
         tags$div(
           id = question_anchor,
           style = "font-size: 15px; font-weight: 600; margin-top: 15px; 
-               margin-bottom: 10px; color: #2C2C2C; scroll-margin-top: 70px;",
+             margin-bottom: 10px; color: #2C2C2C; scroll-margin-top: 70px;",
           q_name
         )
       ))
       
-      # Add plot for this question
       plot_id <- paste0("plot_detail_", gsub("[^A-Za-z0-9]", "_", q_name))
       ui_elements <- append(ui_elements, list(
         box(
           width = 12,
-          plotlyOutput(plot_id, height = 400)  # Taller for multiple demographics
+          plotlyOutput(plot_id, height = 400)
         )
       ))
     }
@@ -912,20 +872,19 @@ server <- function(input, output, session){
     do.call(tagList, ui_elements)
   })
   
-  # Generate plots dynamically for detailed analysis
   observe({
     df <- filtered_polling_data_detail()
-    
+
     question_types <- df %>%
       select(question_name) %>%
       distinct() %>%
       pull(question_name)
-    
+
     for(q_name in question_types) {
       local({
         question_name_local <- q_name
         plot_id <- paste0("plot_detail_", gsub("[^A-Za-z0-9]", "_", question_name_local))
-        
+
         output[[plot_id]] <- renderPlotly({
           response_order <- df %>%
             filter(question_name == question_name_local) %>%
@@ -933,29 +892,29 @@ server <- function(input, output, session){
             distinct() %>%
             arrange(desc(polling_response_coded)) %>%
             pull(polling_response)
-          
-          plot_data <- 
+
+          plot_data <-
             df %>%
             filter(question_name == question_name_local) %>%
             mutate(
-              demo_label = ifelse(demographic_category == "Total", 
-                                  "Total", 
+              demo_label = ifelse(demographic_category == "Total",
+                                  "Total",
                                   paste0(demographic_variable)),
               polling_response = factor(polling_response, levels = response_order)
             ) %>%
-            arrange(demo_label) %>%  
+            arrange(demo_label) %>%
             group_by(demo_label) %>%
             arrange(polling_response, .by_group = TRUE) %>%
             mutate(
               values_normalized = 100 * (values / sum(values, na.rm = TRUE)),
               color = sapply(polling_response_coded, get_response_color),
-              hover_text = 
-                ifelse(demographic_category == "Total", 
+              hover_text =
+                ifelse(demographic_category == "Total",
                        paste0(
                          "Demographic Category: ", demographic_category, "\n",
                          "Response: ", polling_response, "\n",
                          "Percentage: ", round(values_normalized, 1), "%"
-                       ), 
+                       ),
                        paste0(
                          "Demographic Category: ", demographic_category, "\n",
                          demographic_category, ": ", demo_label, "\n",
@@ -966,25 +925,25 @@ server <- function(input, output, session){
             ) %>%
             ungroup() %>%
             mutate(
-              demo_label = factor(demo_label, 
-                                  levels = rev(c("Total", "40k", "40-80k", "80-150k", "150k+", 
+              demo_label = factor(demo_label,
+                                  levels = rev(c("Total", "40k", "40-80k", "80-150k", "150k+",
                                                  sort(unique(demo_label[!(demo_label %in% c("Total", "150k+", "80-150k", "40-80k", "40k"))])))))
             )
-          
-          p <- 
-            plot_data %>% 
-            ggplot(aes(x = demo_label, 
+
+          p <-
+            plot_data %>%
+            ggplot(aes(x = demo_label,
                        y = values_normalized,
                        fill = polling_response,
                        text = hover_text)) +
-            geom_bar(stat = "identity", 
-                     position = position_stack(reverse = FALSE), 
+            geom_bar(stat = "identity",
+                     position = position_stack(reverse = FALSE),
                      width = 0.7) +
-            scale_fill_manual(values = setNames(unique(plot_data$color), 
+            scale_fill_manual(values = setNames(unique(plot_data$color),
                                                 unique(plot_data$polling_response)),
                               name = "Response") +
             scale_y_continuous(breaks = c(0, 25, 50, 75, 100),
-                               labels = function(x) paste0(x, "%")) + 
+                               labels = function(x) paste0(x, "%")) +
             labs(x = NULL, y = NULL) +
             theme_minimal() +
             theme(
@@ -994,7 +953,7 @@ server <- function(input, output, session){
               panel.grid.major.x = element_blank()
             ) +
             coord_flip()
-          
+
           ggplotly(p, tooltip = "text") %>%
             layout(
               showlegend = TRUE,
@@ -1007,7 +966,7 @@ server <- function(input, output, session){
               ),
               margin = list(l = 100, r = 50, t = 10, b = 80),
               bargap = 0.15,
-              xaxis = list(  
+              xaxis = list(
                 range = c(-0.5, 100.5),
                 fixedrange = FALSE
               )
@@ -1017,6 +976,7 @@ server <- function(input, output, session){
     }
   })
 }
+
 
 ####Run App####
 shinyApp(ui, server)
